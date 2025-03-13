@@ -56,6 +56,8 @@ class Task(TaskBase):
     class Config:
         from_attributes = True
 
+
+
 def insert_default_user():
     conn = db.get_db_connection()
     if conn is None:
@@ -613,7 +615,7 @@ async def signup(username: str = Form(...), email: str = Form(...), password: st
         INSERT INTO users (username, email, password_hash, PID, location)
         VALUES (%s, %s, %s, %s, %s);
         """
-        cursor.execute(insert_query, (username, email, hashed_password, location))
+        cursor.execute(insert_query, (username, email, hashed_password, PID, location))
         conn.commit()
         response = RedirectResponse(url = "/login", status_code = 302)
         return response 
