@@ -56,6 +56,7 @@
             <h2>AI Text Generator</h2>
             <textarea id="aiInput" class="w3-input w3-border" rows="4" placeholder="Enter your text prompt..."></textarea>
             <button class="w3-button w3-blue w3-margin-top" onclick="generateText()">Generate</button>
+            <div id="aiOutputContainer" class="w3-large w3-padding-16"></div>
             <p id="aiOutput" class="w3-large"></p>
         </div>
     </div>
@@ -138,6 +139,15 @@ async function getWeather(lat, lon, location) {
         console.error("An error occurred while fetching weather data:", error);
     }
 }
+    let index = 0;
+    function typeWriterEffect() {
+            if (index < text.length) {
+                outputContainer.innerHTML += text[index];
+                index++;
+                setTimeout(typeWriterEffect, 20); // Adjust speed here
+            }
+        }
+        typeWriterEffect();
 
     async function generateText() {
         const prompt = document.getElementById("aiInput").value.trim();
