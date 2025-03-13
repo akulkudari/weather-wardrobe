@@ -563,7 +563,9 @@ async def getAIResponse(request: Request, email: str = Form(...), PID: str = For
 
         # Handle response
         if response.status_code == 200:
-            return JSONResponse(content=response.json())
+            response_json = response.json()
+            ai_response = response_json.get("result", {}).get("response", "No response found")
+            return JSONResponse(content={"response": ai_response})
         else:
             return JSONResponse(
                 content={"error": f"AI API error: {response.text}"},

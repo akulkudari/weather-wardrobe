@@ -165,12 +165,13 @@ async function getWeather(lat, lon, location) {
                 body: formData
             });
 
+
             if (!response.ok) {
                 throw new Error("Failed to generate text");
             }
-
+            
             const data = await response.json();
-            document.getElementById("aiOutput").innerText = data.text;
+            document.getElementById("aiOutput").innerText = data.response;
         } catch (error) {
             console.error("Error generating text:", error);
             alert("Failed to generate text.");
