@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+        }
+        .left-panel {
+            width: 40%;
+        }
+        .right-panel {
+            width: 55%;
+            text-align: center;
+        }
+        .info {
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="left-panel">
+        <h2>AI Text Generator</h2>
+        <textarea id="aiInput" rows="4" cols="40" placeholder="Enter your text prompt..."></textarea>
+        <button onclick="generateText()">Generate</button>
+        <p id="aiOutput"></p>
+    </div>
+    <div class="right-panel">
+        <h1>Weather App</h1>
+        <span id="infoContainer" class="info"></span>
+    </div>
+    <script>
+    document.addEventListener("DOMContentLoaded", async function () {
+        try {
+            const userResponse = await fetch("/user_info", { credentials: "include" });
+            if (!userResponse.ok) {
+                throw new Error("Failed to fetch user information");
+            }
+            const userData = await userResponse.json();
+            
+            if (!userData || !userData.location) {
+                console.warn("No location data available");
+                return;
+            }
+
+            console.log("User location:", userData.location);
+
+            // Check if the location is a city name (string) or a latitude/longitude object
+            if (typeof userData.location === "string") {
+                console.log("Fetching coordinates for city:", userData.location);
+                const { lat, lon } = await getCoordinates(userData.location);
+                if (lat && lon) {
+                    getWeather(lat, lon, userData.location);
+                } else {
+                    console.error("Failed to get coordinates for:", userData.location);
+                }
+            } else if (userData.location.lat && userData.location.lon) {
+                getWeather(userData.location.lat, userData.location.lon, userData.location);
+            } else {
+                console.error("Invalid location data format:", userData.location);
+            }
+        } catch (error) {
+            console.error("Error fetching user location:", error);
+        }
+    });
+
+    async function getCoordinates(city) {
+        try {
+            const encodedCity = encodeURIComponent(city); // Ensures spaces are properly replaced with %20
+            const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodedCity}&format=json`);
+            if (!response.ok) {
+                throw new Error("Failed to fetch city coordinates");
+            }
+            const data = await response.json();
+
+            if (data.length === 0) {
+                throw new Error("City not found");
+            }
+
+            return {
+                lat: data[0].lat,
+                lon: data[0].lon
+            };
+        } catch (error) {
+            console.error("Error getting coordinates:", error);
+            return { lat: null, lon: null };
+        }
+    }
+
+    async function getWeather(lat, lon, location) {
+        try {
+            console.log(`Fetching weather for: Lat=${lat}, Lon=${lon}`);
+            const weatherResponse = await fetch(`https://api.weather.gov/points/${lat},${lon}`);
+            if (!weatherResponse.ok) {
+                throw new Error("Failed to fetch weather data");
+            }
+            const weatherData = await weatherResponse.json();
+            const forecastUrl = weatherData.properties.forecast;
+
+            const forecastResponse = await fetch(forecastUrl);
+            if (!forecastResponse.ok) {
+                throw new Error("Failed to fetch forecast data");
+            }
+            const forecastData = await forecastResponse.json();
+
+            const weather = forecastData.properties.periods[0];
+            const condition = weather.shortForecast;
+            const temperature = `${weather.temperature} °${weather.temperatureUnit}`;
+
+            const infoContainer = document.getElementById("infoContainer");
+            infoContainer.innerHTML = `
+                <p><strong>Location:</strong> ${location}</p>
+                <p><strong>Conditions:</strong> ${condition}</p>
+                <p><strong>Temperature:</strong> ${temperature}</p>
+            `;
+
+        } catch (error) {
+            console.error("An error occurred while fetching weather data:", error);
+        }
+    }
+
+    async function generateText() {
+        const prompt = document.getElementById("aiInput").value.trim();
+        if (!prompt) {
+            alert("Please enter a text prompt.");
+            return;
+        }
+        try {
+            const response = await fetch("/api/ai/complete", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "email": "akudari@ucsd.edu",
+                    "pid": "A17685517"
+                },
+                body: JSON.stringify({ prompt })
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to generate text");
+            }
+
+            const data = await response.json();
+            document.getElementById("aiOutput").innerText = data.text;
+        } catch (error) {
+            console.error("Error generating text:", error);
+            alert("Failed to generate text.");
+        }
+    }
+    </script>
+</body>
+</html>

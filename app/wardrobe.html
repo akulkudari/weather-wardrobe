@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wardrobe Manager</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        h1,h2,h3,h4,h5,h6 {font-family: "Lato", sans-serif}
+        .w3-bar,h1,button {font-family: "Montserrat", sans-serif}
+        .fa-anchor,.fa-coffee {font-size:200px}
+        body {
+            font-family: "Lato", sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+        input, select {
+            width: 95%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background:rgb(182, 0, 0);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+        .edit-btn, .delete-btn {
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+        .edit-btn {
+            background: #ffc107;
+            color: white;
+        }
+        .delete-btn {
+            background: #dc3545;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="w3-top">
+        <div class="w3-bar w3-red w3-card w3-left-align w3-large">
+          <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-padding-large w3-hover-white w3-large w3-red" href="javascript:void(0);" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+          <a href="/dashboard" class="w3-bar-item w3-button w3-padding-large w3-white">Home</a>
+          <a href="/profile" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">My Device Manager</a>
+          <a href="/wardrobe" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">My Wardrobe Manager</a>
+          <a href="/ai" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Talk to our AI Assistant</a>
+          <a href="/signup" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Sign Up</a>
+          <a href="/login" class="w3-bar-item w3-button w3-hide-small w3-padding-large w3-hover-white">Login</a>
+        </div>
+      
+        <!-- Navbar on small screens -->
+        <div id="navDemo" class="w3-bar-block w3-white w3-hide w3-hide-large w3-hide-medium w3-large">
+          <a href="/profile" class="w3-bar-item w3-button w3-padding-large">My Device Manager</a>
+          <a href="/wardrobe" class="w3-bar-item w3-button w3-padding-large">My Wardrobe Manager</a>
+          <a href="/signup" class="w3-bar-item w3-button w3-padding-large">Sign Up</a>
+          <a href="/login" class="w3-bar-item w3-button w3-padding-large">Login</a>
+        </div>
+      </div>
+    <div class="container">
+        <h2>Wardrobe Manager</h2>
+        <form id="wardrobe-form">
+            <label for="clothingType">Choose Clothing Type:</label>
+            <select id="clothingType"  name="clothingType" required>
+                <option value="" disabled selected>Clothing Type (e.g., T-Shirt)</option>
+                <option value="tshirt">T-Shirt</option>
+                <option value="shirt">Shirt</option>
+                <option value="blouse">Blouse</option>
+                <option value="sweater">Sweater</option>
+                <option value="hoodie">Hoodie</option>
+                <option value="jacket">Jacket</option>
+                <option value="coat">Coat</option>
+                <option value="jeans">Jeans</option>
+                <option value="trousers">Trousers</option>
+                <option value="shorts">Shorts</option>
+                <option value="skirt">Skirt</option>
+                <option value="dress">Dress</option>
+                <option value="leggings">Leggings</option>
+                <option value="suit">Suit</option>
+                <option value="jumpsuit">Jumpsuit</option>
+                <option value="tracksuit">Tracksuit</option>
+            </select>
+            <label for="clothingColor">Choose Clothing Color:</label>
+            <input type="color" id="clothingColor"  name="clothingColor">
+            <input type="text" id="colorHex" readonly>
+            <label for="clothingSize">Choose Clothing Size:</label>
+            <select id="clothingSize" name="clothingSize" required>
+                <option value="" disabled selected>Clothing Size (from XXXS to XXXL)</option>
+                <option value="xxxs">XXXS</option>
+                <option value="xxs">XXS</option>
+                <option value="xs">XS</option>
+                <option value="s">S</option>
+                <option value="m">M</option>
+                <option value="l">L</option>
+                <option value="xl">XL</option>
+                <option value="xxl">XXL</option>
+                <option value="xxxl">XXXL</option>
+            </select>
+            <button type="submit">Add Clothing</button>
+        </form>
+        <table id="wardrobe-table">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Color</th>
+                    <th>Size</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id = "tbody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("wardrobe-form");
+            const tableBody = document.querySelector("#wardrobe-table tbody");
+            const clothingTypeOptions = document.getElementById("clothingType").innerHTML; 
+            const clothingSizeOptions = document.getElementById("clothingSize").innerHTML;
+            const colorInput = document.getElementById("clothingColor");
+            const colorDisplay = document.getElementById("colorDisplay");
+            const colorPicker = document.getElementById("clothingColor");
+            const colorHexDisplay = document.getElementById("colorHex");
+
+            // Update the div's background when the color is changed
+            function updateHexColor() {
+               colorHexDisplay.value = colorPicker.value.toLowerCase(); // Display hex
+            }
+
+            colorPicker.addEventListener("input", updateHexColor);
+            
+            updateHexColor();
+
+            async function loadWardrobe() {
+                try {
+                    response = await fetch(`/clothes`);
+                    console.log(`/clothes`);
+                    if (!response) throw new Error("Failed to fetch clothes");
+                    const clothes = await response.json();
+                    console.log("Clothes Data:", clothes);
+
+                    displayClothes(clothes); // Call function to update UI
+                } catch (error) {
+                    console.error("Error fetching clothes:", error);
+                }
+            }
+            function displayClothes(clothes) {
+                const tableBody = document.getElementById("tbody");
+                clothes.forEach(item => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${item.clothing_type}</td>
+                        <td>
+                            <span class="color-preview" style="display: inline-block; width: 20px; height: 20px; background: ${item.clothing_color}; border-radius: 50%;"></span>
+                            <input type="color" class="edit-color" value="${item.clothing_color}" hidden>
+                        </td>
+                        <td>${item.clothing_size}</td>
+                        <td>
+                            <button class="edit-btn">Edit</button>
+                            <button class="save-btn" hidden>Save</button>
+                            <button class="delete-btn">Delete</button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            }
+    
+            async function addClothing(type, color, size) {
+                const tableBody = document.getElementById("tbody");
+                if (!tableBody) {
+                    console.error("Table body not found");
+                    return;
+                }
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${type}</td>
+                    <td>
+                        <span class="color-preview" style="display: inline-block; width: 20px; height: 20px; background: ${color}; border-radius: 50%;"></span>
+                        <input type="color" class="edit-color" value="${color}" hidden>
+                    </td>
+                    <td>${size}</td>
+                    <td>
+                        <button class="edit-btn">Edit</button>
+                        <button class="save-btn" hidden>Save</button>
+                        <button class="delete-btn">Delete</button>
+                    </td>
+                `;
+
+                tableBody.appendChild(row);
+
+                try {
+                    let response = await fetch(`/wardrobe`, {
+                        method: "POST",
+                        headers: { 
+                            "Content-Type": "application/json" 
+                        },
+                        body: JSON.stringify({
+                            clothingType: type,
+                            clothingColor: color,
+                            clothingSize: size
+                        }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Failed to add clothing: ${response.statusText}`);
+                    }
+                    console.log("Clothing added successfully:");
+                } catch (error) { 
+                    console.error("Error adding clothing:", error);
+                }
+            }
+
+            // ✅ Add event listener only once (outside of addClothing)
+            document.getElementById("tbody").addEventListener("click", (event) => {
+                const row = event.target.closest("tr");
+                if (!row) return;
+                
+                if (event.target.classList.contains("edit-btn")) {
+                    editClothing(row);
+                } else if (event.target.classList.contains("save-btn")) {
+                    saveClothing(row);
+                } else if (event.target.classList.contains("delete-btn")) {
+                    deleteClothing(row);
+                }
+            });
+            function rgbToHex(rgb) {
+                    // Extract numbers from rgb(0, 0, 0) format
+                    const match = rgb.match(/\d+/g); 
+                    if (!match || match.length < 3) return rgb; // Return original if parsing fails
+
+                    // Convert each RGB component to a two-digit hex
+                    const r = parseInt(match[0]).toString(16).padStart(2, "0");
+                    const g = parseInt(match[1]).toString(16).padStart(2, "0");
+                    const b = parseInt(match[2]).toString(16).padStart(2, "0");
+
+                    return `#${r}${g}${b}`.toLowerCase(); // Return uppercase hex value
+                }
+    
+            function editClothing(row) {
+                
+                const cells = row.querySelectorAll("td");
+                row.dataset.oldType = cells[0].textContent.trim();
+                row.dataset.oldColor = row.querySelector(".color-preview").style.background;
+                row.dataset.oldSize = cells[2].textContent.trim();
+
+                // Replace text content with dropdowns for editing
+                cells[0].innerHTML = `<select class="edit-type">${clothingTypeOptions}</select>`;
+                cells[2].innerHTML = `<select class="edit-size">${clothingSizeOptions}</select>`;
+    
+                // Show color picker
+                const colorPicker = row.querySelector(".edit-color");
+                colorPicker.hidden = false;
+    
+                // Hide Edit button, show Save button
+                row.querySelector(".edit-btn").hidden = true;
+                row.querySelector(".save-btn").hidden = false;
+            }
+    
+            async function saveClothing(row) {
+                
+                const cells = row.querySelectorAll("td");
+                const oldType = row.dataset.oldType;
+                const oldColor = rgbToHex(row.dataset.oldColor);
+                const oldSize = row.dataset.oldSize;
+
+                const newType = row.querySelector(".edit-type").value;
+                const newColor = row.querySelector(".edit-color").value;
+                const newSize = row.querySelector(".edit-size").value;
+                
+                // Update row with selected values
+                cells[0].textContent = newType;
+                cells[1].innerHTML = `
+                    <span class="color-preview" style="display: inline-block; width: 20px; height: 20px; background: ${newColor}; border-radius: 50%;"></span>
+                    <input type="color" class="edit-color" value="${newColor}" hidden>
+                `;
+                cells[2].textContent = newSize;
+                const clothingUpdate = {
+                    oldClothing: {
+                    clothingType: oldType,
+                    clothingColor: oldColor,
+                    clothingSize: oldSize,
+                },
+                newClothing: {
+                    clothingType: newType,
+                    clothingColor: newColor,
+                    clothingSize: newSize,
+                },
+            };
+                        
+                try{
+                    const response = await fetch(`/wardrobe`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(clothingUpdate),
+                });
+                if (!response.ok) {
+                    throw new Error(`Failed to update clothing: ${response.statusText}`);
+                }
+                const data = await response.json();
+                console.log("Clothing updated successfully:", data);
+                }
+                catch (error) {
+                    console.error("Error updating clothing:", error);
+                }
+                
+
+                // Show Edit button, hide Save button
+                row.querySelector(".edit-btn").hidden = false;
+                row.querySelector(".save-btn").hidden = true;
+            }
+    
+            async function deleteClothing(row) {
+                const cells = row.querySelectorAll("td");
+                clothingType = cells[0].textContent.trim();
+                clothingColor = rgbToHex(row.querySelector(".color-preview").style.background);
+                clothingSize = cells[2].textContent.trim();
+                userId = extract_user_ID();
+                if (confirm("Are you sure you want to delete this item?")) {
+                    try {
+                    const response = await fetch(`/wardrobe`, {
+                        method: "DELETE",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            clothingType,
+                            clothingColor,
+                            clothingSize
+                        })
+                    });
+
+                    if (response.ok) {
+                        alert("Clothing item deleted successfully!");
+                        row.remove();
+                    } else {
+                        const errorData = await response.json();
+                        alert("Error: " + errorData.detail);
+                    }
+                } catch (error) {
+                    console.error("Error deleting clothing:", error);
+                    alert("An error occurred while deleting the item.");
+                }
+
+
+                    row.remove();
+                }
+            }
+            form.addEventListener("submit", async function (event) {
+                event.preventDefault(); // Prevent default form submission
+                const clothingType = document.getElementById("clothingType").value;
+                const clothingColor = document.getElementById("clothingColor").value;
+                const clothingSize = document.getElementById("clothingSize").value;
+                addClothing(clothingType, clothingColor, clothingSize); // Update UI
+                form.reset(); // Clear form
+                
+            });
+            function extract_user_ID(){
+                const pathParts = window.location.pathname.split("/");
+                return pathParts[pathParts.length - 1];
+            }
+            window.onload = () => {
+                loadWardrobe();
+            };
+        });
+
+    </script>
+
+</body>
+</html>

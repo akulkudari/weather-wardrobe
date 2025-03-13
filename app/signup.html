@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #000000;
+        }
+        .signup-container {
+            background: rgb(0, 0, 0);
+            padding: 20px;
+            border-radius: 0px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        input {
+            width: 95%;
+            padding: 10px;
+            margin: 15px 0;
+            border: 1px solid #940000;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #cf0000;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .login-link {
+            margin-top: 10px;
+            display: block;
+        }
+        .header, .footer {
+            width: 100%;
+            text-align: center;
+            size: 5px;
+            padding: 20px 0;    
+            background-color: #cf0000; /* Replace with your desired hex color */
+            color: rgb(207, 207, 207); /* Adjust text color for contrast */
+            }
+    </style>
+</head>
+<body>
+    <header class="w3-container header">
+        <h1>Signup</h1>
+    </header>
+    <div class="signup-container">
+        <form action="/signup" method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="PID" name = "PID" placeholder="PID" required>
+            <input type="text" name="location" placeholder="Location" required>
+            <button type="submit">Signup</button>
+        </form>
+        <br>
+        <form action = "/login">
+        <button type = "submit">Already have an account? Login</a>
+        </form>    
+    </div>
+    <footer class="w3-container w3-black footer">
+        <p>Designed by Akul Kudari and Sherif Elfiky</p>
+    </footer>
+</body>
+</html>

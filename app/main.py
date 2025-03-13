@@ -1,10 +1,17 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from typing import Optional, List
-from datetime import datetime
-from app.database.connection import get_db_connection, init_db
+from fastapi import FastAPI, HTTPException, Query, Form, Request, status, Body, APIRouter
+from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse, JSONResponse
+import mysql.connector
 from mysql.connector import Error
-from contextlib import asynccontextmanager
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+import os
+from dotenv import load_dotenv
+from pydantic import BaseModel
+from datetime import datetime, timezone
+from typing import Optional, List, Dict
+from passlib.context import CryptContext
+import uuid
+import hashlib
 
 
 
@@ -37,9 +44,9 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-@app.get("/")
-async def read_root():
-    return {"message": "Welcome to the Task Management API. Visit /docs for the API documentation."}
+@app.get("/", response_class=HTMLResponse)
+async def read_index():
+    return FileResponse("index.html")
 
 @app.post("/tasks/", response_model=Task)
 async def create_task(task: TaskCreate):
@@ -150,3 +157,4 @@ async def delete_task(task_id: int):
     finally:
         cursor.close()
         conn.close() 
+

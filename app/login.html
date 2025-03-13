@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #000000;
+        }
+        .signup-container {
+            background: rgb(0, 0, 0);
+            padding: 20px;
+            border-radius: 0px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            text-align: center;
+        }
+        input {
+            width: 95%;
+            padding: 10px;
+            margin: 15px 0;
+            background: #ffffff;
+            border: 1px solid #940000;
+            border-radius: 0px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #6f1b1b;
+            color: #8b8b8b;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .login-link {
+            margin-top: 10px;
+            display: block;
+        }
+        .header, .footer {
+            width: 100%;
+            text-align: center;
+            size: 5px;
+            padding: 20px 0;    
+            background-color: #cf0000; /* Replace with your desired hex color */
+            color: rgb(207, 207, 207); /* Adjust text color for contrast */
+            }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="w3-container header">
+        <h1>Login</h1>
+    </header>
+
+    <!-- Login Form -->
+    <div class="signup-container">
+        <div class="login-box w3-white w3-padding w3-round w3-center">
+            <form action="/login" method="POST">
+                <label>Email</label>
+                <input type="email" name="email" class="w3-input w3-border w3-margin-bottom" required>
+                <label>Password</label>
+                <input type="password" name="password" class="w3-input w3-border" required>
+                <button type="submit" class="w3-button w3-red w3-margin-top w3-round">Login</button>
+            </form>
+            <a class="w3-text-blue w3-margin-top" href="/signup">Don't have an account? Sign up</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="w3-container w3-black w3-center w3-padding-32">
+        <p>Designed by Akul Kudari and Sherif Elfiky</p>
+    </footer>
+</body>
+</html>
