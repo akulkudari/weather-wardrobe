@@ -550,7 +550,7 @@ async def getAIResponse(request: Request, email: str = Form(...), PID: str = For
         return RedirectResponse(url="/login", status_code = 302)
     try:
         # Send request to external AI API
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=60.0) as client:
             response = await client.post(
                 AITEXT_API_URL,
                 headers={
@@ -571,7 +571,8 @@ async def getAIResponse(request: Request, email: str = Form(...), PID: str = For
                 content={"error": f"AI API error: {response.text}"},
                 status_code=response.status_code
             )
-
+    except httpx.ReadTimeout:
+        return JSONResponse(status_code=504, content={"error": "AI response took too long."})
     except Exception as e:
         import traceback
         error_details = traceback.format_exc()
