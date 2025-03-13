@@ -46,8 +46,11 @@ def seed_database():
 
     # **Clear existing data**
     cursor.execute("DELETE FROM temperature")
+    print("this part of the code ran 1")
     cursor.execute("DELETE FROM humidity")
+    print("this part of the code ran 2")
     cursor.execute("DELETE FROM light")
+    print("this part of the code ran 3")
 
     # Reset auto-increment counters (optional)
     cursor.execute("ALTER TABLE temperature AUTO_INCREMENT = 1")
