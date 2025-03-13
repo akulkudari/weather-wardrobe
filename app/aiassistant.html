@@ -132,14 +132,23 @@
             return;
         }
         try {
-            const response = await fetch("/api/ai/complete", {
+            const userResponse = await fetch("/user_info", { credentials: "include" });
+            if (!userResponse.ok) {
+                throw new Error("Failed to fetch user information");
+            }
+            const userData = await userResponse.json();
+            
+            if (!userData || !userData.location) {
+                console.warn("No location data available");
+                return;
+            }
+            const formData = new FormData();
+            formData.append("email", userData.email);
+            formData.append("PID", userData.PID);
+            formData.append("prompt", prompt);
+            const response = await fetch("/getairesponse", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "email": "akudari@ucsd.edu",
-                    "pid": "A17685517"
-                },
-                body: JSON.stringify({ prompt })
+                body: formData
             });
 
             if (!response.ok) {

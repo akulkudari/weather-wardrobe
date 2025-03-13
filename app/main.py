@@ -14,7 +14,9 @@ import uuid
 import hashlib
 from contextlib import asynccontextmanager
 import app.database.connection as db
+import httpx
 
+AI_API_URL = "https://api.example.com/api/ai/complete"
 
 templates = Jinja2Templates(directory="app")
 class TaskBase(BaseModel):
@@ -541,7 +543,38 @@ async def delete_clothing(request: Request,  item: ClothingItem):
         cursor.close()
         conn.close()
 
+@app.post("/getairesponse")
+async def getAIResponse(request: Request, email: str = Form(...), PID: str = Form(...), prompt: str = Form(...)):
+    user_id = await authenticate_user(request)
+    if user_id is None:
+        return RedirectResponse(url="/login", status_code = 302)
+    try:
+        # Send request to external AI API
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                AI_API_URL,
+                headers={
+                    "email": email,
+                    "pid": PID,
+                    "Content-Type": "application/json"
+                },
+                json={"prompt": prompt}  # Sending prompt as JSON body
+            )
 
+        # Handle response
+        if response.status_code == 200:
+            return JSONResponse(content=response.json())
+        else:
+            return JSONResponse(
+                content={"error": f"AI API error: {response.text}"},
+                status_code=response.status_code
+            )
+
+    except Exception as e:
+        return JSONResponse(
+            content={"error": f"Internal server error: {str(e)}"},
+            status_code=500
+        )
 
 @app.get("/login", response_class=HTMLResponse)
 async def read_login():

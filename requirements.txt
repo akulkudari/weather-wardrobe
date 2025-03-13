@@ -10,3 +10,4 @@ argon2-cffi
 jinja2
 fastapi-users
 fastapi-login
+httpx
