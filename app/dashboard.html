@@ -56,7 +56,6 @@
             <h2>AI Text Generator</h2>
             <textarea id="aiInput" class="w3-input w3-border" rows="4" placeholder="Enter your text prompt..."></textarea>
             <button class="w3-button w3-blue w3-margin-top" onclick="generateText()">Generate</button>
-            <div id="aiOutputContainer" class="w3-large w3-padding-16"></div>
             <p id="aiOutput" class="w3-large"></p>
         </div>
     </div>
@@ -139,44 +138,8 @@ async function getWeather(lat, lon, location) {
         console.error("An error occurred while fetching weather data:", error);
     }
 }
-
-async function generateText() {
-    const prompt = document.getElementById("aiInput").value.trim();
-    if (!prompt) {
-        alert("Please enter a text prompt.");
-        return;
-    }
-
-    try {
-        const userResponse = await fetch("/user_info", { credentials: "include" });
-        if (!userResponse.ok) throw new Error("Failed to fetch user information");
-        const userData = await userResponse.json();
-        
-        if (!userData || !userData.location) {
-            console.warn("No location data available");
-            return;
-        }
-
-        // Prepare request payload
-        const formData = new FormData();
-        formData.append("email", userData.email);
-        formData.append("PID", userData.PID);
-        formData.append("prompt", prompt);
-
-        // Send request
-        const response = await fetch("/getairesponse", { method: "POST", body: formData });
-        if (!response.ok) throw new Error("Failed to generate text");
-
-        // Parse response
-        const data = await response.json();
-        const text = data.response; // Extract AI response
-
-        // Display text character by character
-        const outputContainer = document.getElementById("aiOutputContainer");
-        outputContainer.innerHTML = ""; // Clear previous text
-
-        let index = 0;
-        function typeWriterEffect() {
+    let index = 0;
+    function typeWriterEffect() {
             if (index < text.length) {
                 outputContainer.innerHTML += text[index];
                 index++;
@@ -184,12 +147,45 @@ async function generateText() {
             }
         }
         typeWriterEffect();
-        
-    } catch (error) {
-        console.error("Error generating text:", error);
-        alert("Failed to generate text.");
+
+    async function generateText() {
+        const prompt = document.getElementById("aiInput").value.trim();
+        if (!prompt) {
+            alert("Please enter a text prompt.");
+            return;
+        }
+        try {
+            const userResponse = await fetch("/user_info", { credentials: "include" });
+            if (!userResponse.ok) {
+                throw new Error("Failed to fetch user information");
+            }
+            const userData = await userResponse.json();
+            
+            if (!userData || !userData.location) {
+                console.warn("No location data available");
+                return;
+            }
+            const formData = new FormData();
+            formData.append("email", userData.email);
+            formData.append("PID", userData.PID);
+            formData.append("prompt", prompt);
+            const response = await fetch("/getairesponse", {
+                method: "POST",
+                body: formData
+            });
+
+
+            if (!response.ok) {
+                throw new Error("Failed to generate text");
+            }
+            
+            const data = await response.json();
+            document.getElementById("aiOutput").innerText = data.response;
+        } catch (error) {
+            console.error("Error generating text:", error);
+            alert("Failed to generate text.");
+        }
     }
-}
 </script>
 
 </body>
