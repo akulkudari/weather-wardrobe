@@ -46,6 +46,41 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+@app.on_event("startup")
+async def startup_event():
+   """Runs at startup to seed the database."""
+   db.create_tables()
+   await db.setup_database()
+   insert_default_user()
+def insert_default_user():
+    conn = db.get_db_connection()
+    if conn is None:
+        return
+
+    try:
+        cursor = conn.cursor()
+        username = "a"
+        email = "a@k.ul"
+        password = "a"  # Change this to a secure password
+        location = "La Jolla"
+
+        # Hash password before inserting (SHA-256 used here)
+        pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
+        hashed_password = pwd_context.hash(password)
+
+        cursor.execute(
+                "INSERT INTO users (username, email, password_hash, location) VALUES (%s, %s, %s, %s)",
+                (username, email, hashed_password, location)
+            )
+        conn.commit()
+        print("Default user added successfully.")
+    except Error as e:
+        print(f"Error: {e}")
+
+    finally:
+        cursor.close()
+        conn.close()
+
 @app.get("/", response_class=HTMLResponse)
 async def read_index():
     return FileResponse("app/index.html")
@@ -55,7 +90,6 @@ async def read_login():
     return FileResponse("app/login.html")
 @app.post("/login")
 async def userlogin(request: Request, email: str = Form(...), password: str = Form(...)):
-    from app.database import create_session, get_user_by_id
     """Login endpoint to authenticate the user."""
 
     conn = db.get_db_connection()
@@ -79,7 +113,7 @@ async def userlogin(request: Request, email: str = Form(...), password: str = Fo
         if not pwd_context.verify(password, stored_password_hash):
             return templates.TemplateResponse("login.html", {"request": request, "error": "Invalid email or password"})
         session_id = str(uuid.uuid4())
-        session = await create_session(user_id, session_id)
+        session = await db.create_session(user_id, session_id)
         if not session:
             response = RedirectResponse(url=f"/login", status_code=302)
             return response
