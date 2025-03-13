@@ -261,34 +261,48 @@ async def read_dashboard(request: Request):
         return RedirectResponse(url="/login", status_code = 302)
     return FileResponse("app/dashboard.html")
 
-@app.get("/location")
-async def get_location(request: Request):
+@app.get("/user_info")
+async def get_user_info(request: Request):
     """
-    Fetch user location from the users table.
+    Fetch user info from the users table.
     
     :param request: The server request.
-    :return: A JSON response containing user's location data.
+    :return: A JSON response containing user's data.
     """
     user_id = await authenticate_user(request)
     if user_id is None:
-        return RedirectResponse(url="/login", status_code = 303)
+        return RedirectResponse(url="/login", status_code=303)
+    
     conn = db.get_db_connection()
     if conn is None:
         raise HTTPException(status_code=500, detail="Database connection error")
+    
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT location FROM users WHERE id = %s", (user_id,))
-        user_loc = cursor.fetchone()
-        if not user_loc:
-            raise HTTPException(status_code = 404, detail = "User not found")
-        location = user_loc[0]
-        return JSONResponse(content=location)
+        cursor.execute("SELECT id, username, email, location, created_at FROM users WHERE id = %s", (user_id,))
+        user = cursor.fetchone()  # 🔹 Fetch only ONE user
+        
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        # 🔹 Convert datetime field to string
+        user_data = {
+            "id": user[0],
+            "username": user[1],
+            "email": user[2],
+            "location": user[3],
+            "PID": user[4],
+            "created_at": user[5].isoformat() if isinstance(user[4], datetime) else None
+        }
+
+        return JSONResponse(content=user_data)
+
     except Exception as e:
         import traceback
-        error_details = traceback.format_exc()
-        print("Database Error:", error_details)  # Log full error details
+        print("Database Error:", traceback.format_exc())  # Log error details
         raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
-    finally: 
+
+    finally:
         cursor.close()
         conn.close()
 
