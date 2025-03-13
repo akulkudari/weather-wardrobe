@@ -11,6 +11,69 @@ import logging
 load_dotenv()
 logger = logging.getLogger(__name__)
 
+def seed_database():
+    # Establish database connection
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Create tables
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS temperature (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            value FLOAT,
+            unit VARCHAR(10),
+            timestamp DATETIME
+        )
+    """)
+    
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS humidity (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            value FLOAT,
+            unit VARCHAR(10),
+            timestamp DATETIME
+        )
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS light (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            value FLOAT,
+            unit VARCHAR(10),
+            timestamp DATETIME
+        )
+    """)
+
+    # Load CSVs into pandas dataframes
+    temperature_df = pd.read_csv('sample/temperature.csv')
+    humidity_df = pd.read_csv('sample/humidity.csv')
+    light_df = pd.read_csv('sample/light.csv')
+
+    # Insert data into the temperature table
+    for _, row in temperature_df.iterrows():
+        cursor.execute("""
+            INSERT INTO temperature (value, unit, timestamp)
+            VALUES (%s, %s, %s)
+        """, (row['value'], row['unit'], row['timestamp']))
+    
+    # Insert data into the humidity table
+    for _, row in humidity_df.iterrows():
+        cursor.execute("""
+            INSERT INTO humidity (value, unit, timestamp)
+            VALUES (%s, %s, %s)
+        """, (row['value'], row['unit'], row['timestamp']))
+    
+    # Insert data into the light table
+    for _, row in light_df.iterrows():
+        cursor.execute("""
+            INSERT INTO light (value, unit, timestamp)
+            VALUES (%s, %s, %s)
+        """, (row['value'], row['unit'], row['timestamp']))
+    
+    # Commit and close the connection
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 def get_db_connection():
     try:
@@ -271,3 +334,6 @@ def init_db():
             if connection.is_connected():
                 cursor.close()
                 connection.close() 
+
+if __name__ == "__main__":
+    seed_database()
