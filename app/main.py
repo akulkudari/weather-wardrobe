@@ -571,6 +571,9 @@ async def getAIResponse(request: Request, email: str = Form(...), PID: str = For
             )
 
     except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        print("Database Error:", error_details)  # Log full error details
         return JSONResponse(
             content={"error": f"Internal server error: {str(e)}"},
             status_code=500
