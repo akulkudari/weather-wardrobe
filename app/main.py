@@ -144,6 +144,24 @@ async def authenticate_user(request: Request):
 async def read_index():
     return FileResponse("app/index.html")
 
+@app.get("/api/{sensor_type}/count")
+def get_sensor_count(sensor_type: str):
+   """Returns the number of rows for a given sensor type."""
+   if sensor_type not in ["temperature", "humidity", "light"]:
+       raise HTTPException(status_code=404, detail="Invalid sensor type")
+   
+   conn = db.get_db_connection()
+   cursor = conn.cursor()
+
+   query = f"SELECT COUNT(*) FROM {sensor_type}"
+   cursor.execute(query)
+   count = cursor.fetchone()[0]
+
+   cursor.close()
+   conn.close()
+
+   return count
+
 @app.get("/api/{sensor_type}")
 def get_all_sensor_data(
     sensor_type: str,
@@ -313,7 +331,9 @@ async def ai(request: Request):
     user_id = authenticate_user(request)
     if user_id is None:
         return RedirectResponse(url="/login", status_code = 302)
-    return FileResponse("app/dashboard.html")     
+    return FileResponse("app/aiassistant.html")     
+
+
 
 @app.get("/clothes")
 async def get_clothes(request: Request):
@@ -550,7 +570,7 @@ async def getAIResponse(request: Request, email: str = Form(...), PID: str = For
         return RedirectResponse(url="/login", status_code = 302)
     try:
         # Send request to external AI API
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        async with httpx.AsyncClient() as client:
             response = await client.post(
                 AITEXT_API_URL,
                 headers={
