@@ -13,7 +13,7 @@ from passlib.context import CryptContext
 import uuid
 import hashlib
 from contextlib import asynccontextmanager
-import app.database.connection
+import app.database.connection as db
 
 
 class TaskBase(BaseModel):
@@ -35,7 +35,7 @@ class Task(TaskBase):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    init_db()
+    db.init_db()
     yield
 
 app = FastAPI(
@@ -51,7 +51,7 @@ async def read_index():
 
 @app.post("/tasks/", response_model=Task)
 async def create_task(task: TaskCreate):
-    conn = get_db_connection()
+    conn = db.get_db_connection()
     if not conn:
         raise HTTPException(status_code=500, detail="Database connection failed")
     
@@ -75,7 +75,7 @@ async def create_task(task: TaskCreate):
 
 @app.get("/tasks/", response_model=List[Task])
 async def read_tasks():
-    conn = get_db_connection()
+    conn = db.get_db_connection()
     if not conn:
         raise HTTPException(status_code=500, detail="Database connection failed")
     
@@ -92,7 +92,7 @@ async def read_tasks():
 
 @app.get("/tasks/{task_id}", response_model=Task)
 async def read_task(task_id: int):
-    conn = get_db_connection()
+    conn = db.get_db_connection()
     if not conn:
         raise HTTPException(status_code=500, detail="Database connection failed")
     
@@ -111,7 +111,7 @@ async def read_task(task_id: int):
 
 @app.put("/tasks/{task_id}", response_model=Task)
 async def update_task(task_id: int, task: TaskCreate):
-    conn = get_db_connection()
+    conn = db.get_db_connection()
     if not conn:
         raise HTTPException(status_code=500, detail="Database connection failed")
     
@@ -140,7 +140,7 @@ async def update_task(task_id: int, task: TaskCreate):
 
 @app.delete("/tasks/{task_id}")
 async def delete_task(task_id: int):
-    conn = get_db_connection()
+    conn = db.get_db_connection()
     if not conn:
         raise HTTPException(status_code=500, detail="Database connection failed")
     
