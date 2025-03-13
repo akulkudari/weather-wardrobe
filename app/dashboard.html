@@ -139,32 +139,43 @@ async function getWeather(lat, lon, location) {
     }
 }
 
-async function generateText() {
-    const prompt = document.getElementById("aiInput").value.trim();
-    if (!prompt) {
-        alert("Please enter a text prompt.");
-        return;
-    }
-    try {
-        const response = await fetch("/api/ai/complete", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "email": "akudari@ucsd.edu",
-                "pid": "A17685517"
-            },
-            body: JSON.stringify({ prompt })
-        });
+    async function generateText() {
+        const prompt = document.getElementById("aiInput").value.trim();
+        if (!prompt) {
+            alert("Please enter a text prompt.");
+            return;
+        }
+        try {
+            const userResponse = await fetch("/user_info", { credentials: "include" });
+            if (!userResponse.ok) {
+                throw new Error("Failed to fetch user information");
+            }
+            const userData = await userResponse.json();
+            
+            if (!userData || !userData.location) {
+                console.warn("No location data available");
+                return;
+            }
+            const formData = new FormData();
+            formData.append("email", userData.email);
+            formData.append("PID", userData.PID);
+            formData.append("prompt", prompt);
+            const response = await fetch("/getairesponse", {
+                method: "POST",
+                body: formData
+            });
 
-        if (!response.ok) throw new Error("Failed to generate text");
+            if (!response.ok) {
+                throw new Error("Failed to generate text");
+            }
 
-        const data = await response.json();
-        document.getElementById("aiOutput").innerText = data.text;
-    } catch (error) {
-        console.error("Error generating text:", error);
-        alert("Failed to generate text.");
+            const data = await response.json();
+            document.getElementById("aiOutput").innerText = data.text;
+        } catch (error) {
+            console.error("Error generating text:", error);
+            alert("Failed to generate text.");
+        }
     }
-}
 </script>
 
 </body>
