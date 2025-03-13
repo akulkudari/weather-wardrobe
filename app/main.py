@@ -16,7 +16,7 @@ from contextlib import asynccontextmanager
 import app.database.connection as db
 import httpx
 
-AI_API_URL = "https://api.example.com/api/ai/complete"
+AI_API_URL = "https://ece140-wi25-api.frosty-sky-f43d.workers.dev/"
 
 templates = Jinja2Templates(directory="app")
 class TaskBase(BaseModel):
