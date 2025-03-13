@@ -109,12 +109,11 @@ async def startup_event():
    insert_default_user()
 
 async def authenticate_user(request: Request):
-    from app.database import get_user_by_id
     session_id = request.cookies.get("sessionId")
     if not session_id:
         raise HTTPException(status_code=401, detail="Unauthorized: No session ID provided")
     
-    conn = get_db_connection()
+    conn = db.get_db_connection()
     if conn is None:
         raise HTTPException(status_code=500, detail="Database connection error")  
 
@@ -128,7 +127,7 @@ async def authenticate_user(request: Request):
 
         user_id = valid_session[0]  # Extract the user_id from the result
         print(user_id)
-        user = await get_user_by_id(user_id)  # Ensure this is async; otherwise, remove 'await'
+        user = await db.get_user_by_id(user_id)  # Ensure this is async; otherwise, remove 'await'
         
         if not user:
             return None  # No valid user found
