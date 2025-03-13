@@ -279,7 +279,7 @@ async def get_user_info(request: Request):
     
     try:
         cursor = conn.cursor()
-        cursor.execute("SELECT id, username, email, location, created_at FROM users WHERE id = %s", (user_id,))
+        cursor.execute("SELECT id, username, email, location, PID, created_at FROM users WHERE id = %s", (user_id,))
         user = cursor.fetchone()  # 🔹 Fetch only ONE user
         
         if not user:
