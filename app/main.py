@@ -313,7 +313,7 @@ async def ai(request: Request):
     user_id = authenticate_user(request)
     if user_id is None:
         return RedirectResponse(url="/login", status_code = 302)
-    return FileResponse("app/aiassistant.html")     
+    return FileResponse("app/dashboard.html")     
 
 @app.get("/clothes")
 async def get_clothes(request: Request):
