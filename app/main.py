@@ -16,7 +16,7 @@ from contextlib import asynccontextmanager
 import app.database.connection as db
 import httpx
 
-AI_API_URL = "https://ece140-wi25-api.frosty-sky-f43d.workers.dev/api/ai/complete"
+AITEXT_API_URL = "https://ece140-wi25-api.frosty-sky-f43d.workers.dev/api/ai/complete"
 
 templates = Jinja2Templates(directory="app")
 class TaskBase(BaseModel):
@@ -552,7 +552,7 @@ async def getAIResponse(request: Request, email: str = Form(...), PID: str = For
         # Send request to external AI API
         async with httpx.AsyncClient() as client:
             response = await client.post(
-                AI_API_URL,
+                AITEXT_API_URL,
                 headers={
                     "email": email,
                     "pid": PID,
