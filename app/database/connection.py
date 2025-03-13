@@ -43,6 +43,7 @@ async def setup_database(initial_users: dict = None):
                 username VARCHAR(255) NOT NULL UNIQUE,
                 email VARCHAR(255) NOT NULL UNIQUE,
                 password_hash VARCHAR(255) NOT NULL,
+                PID VARCHAR(10) NOT NULL,
                 location VARCHAR(255) NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )

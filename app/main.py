@@ -579,7 +579,7 @@ async def read_signup():
     return FileResponse("app/signup.html")
 
 @app.post("/signup")
-async def signup(username: str = Form(...), email: str = Form(...), password: str = Form(...), location: str = Form(...)):
+async def signup(username: str = Form(...), email: str = Form(...), password: str = Form(...), PID: str = Form(...), location: str = Form(...)):
     conn = db.get_db_connection()
     if conn is None:
         return "Database connection error"
@@ -591,6 +591,7 @@ async def signup(username: str = Form(...), email: str = Form(...), password: st
             username VARCHAR(100) NOT NULL,
             email VARCHAR(255) UNIQUE NOT NULL,
             password_hash VARCHAR(255) NOT NULL,
+            PID VARCHAR(10) NOT NULL,
             location VARCHAR(255),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
@@ -609,8 +610,8 @@ async def signup(username: str = Form(...), email: str = Form(...), password: st
 
         # Insert the new user into the 'users' table
         insert_query = """
-        INSERT INTO users (username, email, password_hash, location)
-        VALUES (%s, %s, %s, %s);
+        INSERT INTO users (username, email, password_hash, PID, location)
+        VALUES (%s, %s, %s, %s, %s);
         """
         cursor.execute(insert_query, (username, email, hashed_password, location))
         conn.commit()
