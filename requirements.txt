@@ -1,5 +1,12 @@
 fastapi
+pydantic
 uvicorn
 mysql-connector-python
+pandas
 python-dotenv
-pydantic
+python-multipart
+passlib
+argon2-cffi
+jinja2
+fastapi-users
+fastapi-login
