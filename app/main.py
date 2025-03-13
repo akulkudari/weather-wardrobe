@@ -47,7 +47,7 @@ app = FastAPI(
 
 @app.get("/", response_class=HTMLResponse)
 async def read_index():
-    return FileResponse("index.html")
+    return FileResponse("app/index.html")
 
 @app.post("/tasks/", response_model=Task)
 async def create_task(task: TaskCreate):
