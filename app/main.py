@@ -609,7 +609,7 @@ async def signup(username: str = Form(...), email: str = Form(...), password: st
         # Hash the password
         pwd_context = CryptContext(schemes=["argon2"], deprecated="auto")
         hashed_password = pwd_context.hash(password)
-
+        print("we got to here")
         # Insert the new user into the 'users' table
         insert_query = """
         INSERT INTO users (username, email, password_hash, PID, location)
