@@ -16,7 +16,7 @@ def seed_database():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # Create tables
+    # Create tables if they don't exist
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS temperature (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -44,10 +44,20 @@ def seed_database():
         )
     """)
 
+    # **Clear existing data**
+    cursor.execute("DELETE FROM temperature")
+    cursor.execute("DELETE FROM humidity")
+    cursor.execute("DELETE FROM light")
+
+    # Reset auto-increment counters (optional)
+    cursor.execute("ALTER TABLE temperature AUTO_INCREMENT = 1")
+    cursor.execute("ALTER TABLE humidity AUTO_INCREMENT = 1")
+    cursor.execute("ALTER TABLE light AUTO_INCREMENT = 1")
+
     # Load CSVs into pandas dataframes
-    temperature_df = pd.read_csv('sample/temperature.csv')
-    humidity_df = pd.read_csv('sample/humidity.csv')
-    light_df = pd.read_csv('sample/light.csv')
+    temperature_df = pd.read_csv('app/sample/temperature.csv')
+    humidity_df = pd.read_csv('app/sample/humidity.csv')
+    light_df = pd.read_csv('app/sample/light.csv')
 
     # Insert data into the temperature table
     for _, row in temperature_df.iterrows():
@@ -74,7 +84,6 @@ def seed_database():
     conn.commit()
     cursor.close()
     conn.close()
-
 def get_db_connection():
     try:
         connection = mysql.connector.connect(
