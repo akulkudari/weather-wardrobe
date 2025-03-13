@@ -535,7 +535,6 @@ async def read_login():
 @app.post("/login")
 async def userlogin(request: Request, email: str = Form(...), password: str = Form(...)):
     """Login endpoint to authenticate the user."""
-
     conn = db.get_db_connection()
     if conn is None:
         raise HTTPException(status_code=500, detail="Database connection error")
@@ -566,6 +565,9 @@ async def userlogin(request: Request, email: str = Form(...), password: str = Fo
         return response
 
     except Error as e:
+        import traceback
+        error_details = traceback.format_exc()
+        print("Database Error:", error_details)  # Log full error details
         raise HTTPException(status_code=500, detail=f"Error during database operation: {e}")
 
     finally:
