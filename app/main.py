@@ -107,6 +107,7 @@ app = FastAPI(
 async def startup_event():
    """Runs at startup to seed the database."""
    db.create_tables()
+   print("this runs everytime")
    await db.setup_database()
    insert_default_user()
 
