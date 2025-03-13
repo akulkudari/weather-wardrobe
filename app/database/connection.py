@@ -339,13 +339,10 @@ def init_db():
             cursor.execute(create_table_query)
             connection.commit()
             print("Database initialized successfully")
-            
+            seed_database()
         except Error as e:
             print(f"Error initializing database: {e}")
         finally:
             if connection.is_connected():
                 cursor.close()
                 connection.close() 
-
-if __name__ == "__main__":
-    seed_database()
