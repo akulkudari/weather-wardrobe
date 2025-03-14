@@ -294,7 +294,7 @@ async def image_page(request: Request):
     return FileResponse("app/imagegen.html")
 
 
-@app.post("/ai-image")
+@app.post("/ai_image")
 async def generate_ai_image(request: Request):
     API_URL = "https://ece140-wi25-api.frosty-sky-f43d.workers.dev/api/v1/ai/image"
     data = await request.json()

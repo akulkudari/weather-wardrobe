@@ -363,7 +363,7 @@ async function getWeather(lat, lon, location) {
                 return;
             }
             
-            const response = await fetch(`/ai-image`, {
+            const response = await fetch(`/ai_image`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ prompt: prompt })

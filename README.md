@@ -1,10 +1,4 @@
-# wi25-cloud
+Akul Kudari and Sherif Elfiky
 
-Create a database instance at aiven.com
-
-Get the credentials and the certificate
-
-Head to render.com, create a container app
-
-Add the credentials and deploy the application
+https://tech-assignment-final-project-sherif-and.onrender.com
 
