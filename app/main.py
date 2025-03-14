@@ -288,7 +288,7 @@ async def read_dashboard(request: Request):
 
 @app.get("/image")
 async def image_page(request: Request):
-    user_id = authenticate_user()
+    user_id = authenticate_user(request)
     if user_id is None:
         return RedirectResponse(url="/login", status_code=303)
     return FileResponse("app/imagegen.html")
