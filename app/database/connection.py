@@ -1,7 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
 import os
-import HTTPException
+from fastapi import HTTPException
 from dotenv import load_dotenv
 from typing import Optional
 import pandas as pd
