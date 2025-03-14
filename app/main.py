@@ -207,8 +207,8 @@ def insert_sensor_data(sensor_type: str, data: SensorData):
    connection = db.get_db_connection()
    connectionCursor = connection.cursor()
    timestamp = data.timestamp if data.timestamp else datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-   query = f"INSERT INTO {sensor_type} (value, unit, timestamp, mac_address) VALUES (%s, %s, %s, %s)"
-   connectionCursor.execute(query, (data.value, data.unit, timestamp, data.mac_address))
+   query = f"INSERT INTO {sensor_type} (value, unit, timestamp) VALUES (%s, %s, %s)"
+   connectionCursor.execute(query, (data.value, data.unit, timestamp))
    connection.commit()
    inserted_id = connectionCursor.lastrowid
    connectionCursor.close()
@@ -622,8 +622,8 @@ async def update_temp(request: Request, data: SensorData):
     try:
         connectionCursor = conn.cursor()
         timestamp = data.timestamp if data.timestamp else datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        query = f"INSERT INTO temperature (value, unit,  mac_address, timestamp) VALUES (%s, %s, %s, %s)"
-        connectionCursor.execute(query, (data.value, data.unit, data.mac_address, timestamp))
+        query = f"INSERT INTO temperature (value, unit, timestamp) VALUES (%s, %s, %s)"
+        connectionCursor.execute(query, (data.value, data.unit, timestamp))
         conn.commit()
     except Exception as e:
         import traceback
