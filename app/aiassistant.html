@@ -1,118 +1,66 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Sensor Data Dashboard</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temperature Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        .container {
+            margin: 50px auto;
+            padding: 20px;
+            width: 400px;
+            background: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            font-size: 24px;
+        }
+        #temperature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .temperature-item {
+            font-size: 18px;
+            padding: 5px 0;
+            border-bottom: 1px solid #ddd;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>Sensor Data Dashboard</h1>
-    <nav>
-      <a href="/">Home</a>
-    </nav>
-  </header>
-  
-  <main>
-    <section>
-      <h2>Temperature Data</h2>
-      <canvas id="temperatureChart"></canvas>
-    </section>
-    <section>
-      <h2>Humidity Data</h2>
-      <canvas id="humidityChart"></canvas>
-    </section>
-    <section>
-      <h2>Light Data</h2>
-      <canvas id="lightChart"></canvas>
-    </section>
-  </main>
-  <script>
-    document.addEventListener("DOMContentLoaded", () => {
-    const fetchSensorData = async (mac_address, startDate = "", endDate = "") => {
-        try {
-        let url = `/temperatures/${mac_address}`;
-        const queryParams = [];
-        if (startDate) queryParams.push(`start-date=${encodeURIComponent(startDate)}`);
-        if (endDate) queryParams.push(`end-date=${encodeURIComponent(endDate)}`);
-
-        if (queryParams.length) {
-            url += `?${queryParams.join("&")}`;
-        }
-
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`Failed to fetch data for ${mac_address}: ${response.statusText}`);
-        }
-
-        return response.json();
-        } catch (error) {
-        console.error(`Error fetching ${sensorType} data:`, error);
-        return [];
-        }
-    };
+    <div class="container">
+        <h1>Temperature Readings</h1>
+        <ul id="temperature-list">Loading...</ul>
+    </div>
     
-    const renderChart = (canvasId, title, sensorData) => {
-        if (!sensorData.length) {
-        console.warn(`No data available for ${title}`);
-        return;
+    <script>
+        async function fetchTemperature() {
+            try {
+                const response = await fetch('/temperatures');
+                const data = await response.json();
+                
+                const listElement = document.getElementById('temperature-list');
+                listElement.innerHTML = '';
+                
+                data.forEach(entry => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'temperature-item';
+                    listItem.textContent = `MAC: ${entry.mac_address}, Temp: ${entry.value}°${entry.unit.charAt(0).toUpperCase()}, Time: ${entry.timestamp}`;
+                    listElement.appendChild(listItem);
+                });
+            } catch (error) {
+                document.getElementById('temperature-list').textContent = 'Error loading temperature data';
+                console.error('Error fetching temperature:', error);
+            }
         }
-
-        sensorData.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
-        const labels = sensorData.map(({ timestamp }) => timestamp);
-        const dataValues = sensorData.map(({ value }) => value);
-        const ctx = document.getElementById(canvasId)?.getContext("2d");
-
-        if (!ctx) {
-        console.error(`Canvas element with ID '${canvasId}' not found.`);
-        return;
-        }
-
-        new Chart(ctx, {
-        type: "line",
-        data: {
-            labels,
-            datasets: [
-            {
-                label: title,
-                data: dataValues,
-                borderColor: "blue",
-            },
-            ],
-        },
-        options: {
-            plugins: {
-            title: { display: true, text: title },
-            legend: { display: true },
-            },
-            scales: {
-            x: { title: { display: true, text: "Timestamp" } },
-            y: { title: { display: true, text: "Value" } },
-            },
-        },
-        });
-    };
-
-    const initiateDashboard = async () => {
-        try {
-        const [temperatureData, humidityData, lightData] = await Promise.all([
-            fetchSensorData("temperature"),
-            fetchSensorData("humidity"),
-            fetchSensorData("light"),
-        ]);
-
-        renderChart("temperatureChart", "Temperature", temperatureData);
-        renderChart("humidityChart", "Humidity", humidityData);
-        renderChart("lightChart", "Light", lightData);
-        } catch (error) {
-        console.error("Error initializing dashboard:", error);
-        }
-    };
-
-    initiateDashboard();
-    });
-  </script>
+        
+        fetchTemperature();
+        setInterval(fetchTemperature, 5000); // Refresh data every 5 seconds
+    </script>
 </body>
 </html>
