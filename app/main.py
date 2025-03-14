@@ -49,6 +49,7 @@ class SensorData(BaseModel):
    value: float
    unit: str
    timestamp: Optional[str] = None
+   mac_address: str
 
 class Task(TaskBase):
     id: int
@@ -144,7 +145,7 @@ async def authenticate_user(request: Request):
 @app.get("/", response_class=HTMLResponse)
 async def read_index():
     return FileResponse("app/index.html")
-
+    
 @app.get("/api/{sensor_type}/count")
 def get_sensor_count(sensor_type: str):
    """Returns the number of rows for a given sensor type."""
@@ -206,8 +207,8 @@ def insert_sensor_data(sensor_type: str, data: SensorData):
    connection = db.get_db_connection()
    connectionCursor = connection.cursor()
    timestamp = data.timestamp if data.timestamp else datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-   query = f"INSERT INTO {sensor_type} (value, unit, timestamp) VALUES (%s, %s, %s)"
-   connectionCursor.execute(query, (data.value, data.unit, timestamp))
+   query = f"INSERT INTO {sensor_type} (value, unit, timestamp, mac_address) VALUES (%s, %s, %s, %s)"
+   connectionCursor.execute(query, (data.value, data.unit, timestamp, data.mac_address))
    connection.commit()
    inserted_id = connectionCursor.lastrowid
    connectionCursor.close()
@@ -248,6 +249,9 @@ def update_sensor_data(sensor_type: str, id: int, data: SensorData):
    if data.timestamp:
        updates.append("timestamp = %s")
        params.append(data.timestamp)
+   if data.mac_address:
+       updates.append("mac_address = %s")
+       params.append (data.mac_address)
    if not updates:
        raise HTTPException(status_code=400, detail="No fields to update")
    params.append(id)

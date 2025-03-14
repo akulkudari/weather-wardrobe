@@ -11,82 +11,6 @@ import logging
 load_dotenv()
 logger = logging.getLogger(__name__)
 
-def seed_database():
-    # Establish database connection
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    # Create tables if they don't exist
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS temperature (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            value FLOAT,
-            unit VARCHAR(10),
-            timestamp DATETIME
-        )
-    """)
-    
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS humidity (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            value FLOAT,
-            unit VARCHAR(10),
-            timestamp DATETIME
-        )
-    """)
-
-    cursor.execute("""
-        CREATE TABLE IF NOT EXISTS light (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            value FLOAT,
-            unit VARCHAR(10),
-            timestamp DATETIME
-        )
-    """)
-
-    # **Clear existing data**
-    cursor.execute("DELETE FROM temperature")
-    print("this part of the code ran 1")
-    cursor.execute("DELETE FROM humidity")
-    print("this part of the code ran 2")
-    cursor.execute("DELETE FROM light")
-    print("this part of the code ran 3")
-
-    # Reset auto-increment counters (optional)
-    cursor.execute("ALTER TABLE temperature AUTO_INCREMENT = 1")
-    cursor.execute("ALTER TABLE humidity AUTO_INCREMENT = 1")
-    cursor.execute("ALTER TABLE light AUTO_INCREMENT = 1")
-
-    # Load CSVs into pandas dataframes
-    temperature_df = pd.read_csv('app/sample/temperature.csv')
-    humidity_df = pd.read_csv('app/sample/humidity.csv')
-    light_df = pd.read_csv('app/sample/light.csv')
-
-    # Insert data into the temperature table
-    for _, row in temperature_df.iterrows():
-        cursor.execute("""
-            INSERT INTO temperature (value, unit, timestamp)
-            VALUES (%s, %s, %s)
-        """, (row['value'], row['unit'], row['timestamp']))
-    
-    # Insert data into the humidity table
-    for _, row in humidity_df.iterrows():
-        cursor.execute("""
-            INSERT INTO humidity (value, unit, timestamp)
-            VALUES (%s, %s, %s)
-        """, (row['value'], row['unit'], row['timestamp']))
-    
-    # Insert data into the light table
-    for _, row in light_df.iterrows():
-        cursor.execute("""
-            INSERT INTO light (value, unit, timestamp)
-            VALUES (%s, %s, %s)
-        """, (row['value'], row['unit'], row['timestamp']))
-    
-    # Commit and close the connection
-    conn.commit()
-    cursor.close()
-    conn.close()
 def get_db_connection():
     try:
         connection = mysql.connector.connect(
@@ -224,6 +148,7 @@ def create_tables():
                id INT AUTO_INCREMENT PRIMARY KEY,
                value FLOAT NOT NULL,
                unit VARCHAR(10) NOT NULL,
+               mac_address VARCHAR(255) NOT NULL,
                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
            );
        """,
@@ -232,6 +157,7 @@ def create_tables():
                id INT AUTO_INCREMENT PRIMARY KEY,
                value FLOAT NOT NULL,
                unit VARCHAR(10) NOT NULL,
+               mac_address VARCHAR(255) NOT NULL,
                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
            );
        """,
@@ -240,6 +166,7 @@ def create_tables():
                id INT AUTO_INCREMENT PRIMARY KEY,
                value FLOAT NOT NULL,
                unit VARCHAR(10) NOT NULL,
+               mac_address VARCHAR(255) NOT NULL,
                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
            );
        """,
@@ -339,7 +266,6 @@ def init_db():
             cursor.execute(create_table_query)
             connection.commit()
             print("Database initialized successfully")
-            seed_database()
         except Error as e:
             print(f"Error initializing database: {e}")
         finally:
