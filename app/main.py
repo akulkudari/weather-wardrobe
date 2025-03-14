@@ -302,7 +302,7 @@ async def generate_ai_image(request: Request):
     width = data.get("width", 512)
     height = data.get("height", 512)
     
-    user_id = authenticate_user(request)
+    user_id = await authenticate_user(request)
     if user_id is None:
         return RedirectResponse(url="/login", status_code=303)
     
