@@ -707,7 +707,7 @@ async def userlogin(request: Request, email: str = Form(...), password: str = Fo
         if not session:
             response = RedirectResponse(url=f"/login", status_code=302)
             return response
-        response = RedirectResponse(url=f"/wardrobe", status_code=302)
+        response = RedirectResponse(url=f"/dashboard", status_code=302)
         response.set_cookie(key="sessionId", value=session_id, httponly=True, max_age=3600)
         return response
 
