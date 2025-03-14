@@ -30,14 +30,14 @@
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ prompt: prompt })
             });
-            
+
             if (!response.ok) {
                 alert("Error generating image.");
                 return;
             }
             
-            const data = await response.json();
-            const imageUrl = data.image_url; // Assuming API returns image URL
+            const blob = await response.blob(); // Convert response to binary blob
+            const imageUrl = URL.createObjectURL(blob); // Create a URL for the blob
             
             document.getElementById("image-container").innerHTML = 
                 `<img src="${imageUrl}" alt="Generated Image" style="max-width: 100%; margin-top: 20px;">`;

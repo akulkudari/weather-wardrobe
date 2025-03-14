@@ -341,7 +341,7 @@ async def generate_ai_image(request: Request):
         if response.status_code != 200:
             raise HTTPException(status_code=response.status_code, detail=response.text)
 
-        return response.json()
+        return Response(content=response.content, media_type="image/png")
     
     except Exception as e:
         import traceback
