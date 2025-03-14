@@ -30,11 +30,10 @@
   </main>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-    const fetchSensorData = async (sensorType, startDate = "", endDate = "") => {
+    const fetchSensorData = async (mac_address, startDate = "", endDate = "") => {
         try {
-        let url = `/api/${sensorType}`;
+        let url = `/temperatures/${mac_address}`;
         const queryParams = [];
-
         if (startDate) queryParams.push(`start-date=${encodeURIComponent(startDate)}`);
         if (endDate) queryParams.push(`end-date=${encodeURIComponent(endDate)}`);
 
@@ -44,7 +43,7 @@
 
         const response = await fetch(url);
         if (!response.ok) {
-            throw new Error(`Failed to fetch data for ${sensorType}: ${response.statusText}`);
+            throw new Error(`Failed to fetch data for ${mac_address}: ${response.statusText}`);
         }
 
         return response.json();
