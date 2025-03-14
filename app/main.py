@@ -611,8 +611,30 @@ async def getAIResponse(request: Request, email: str = Form(...), PID: str = For
 async def read_login():
     return FileResponse("app/login.html")
 
+@app.get("/temperatures")
+async def get_temp():
+    conn = db.get_db_connection()
+    if conn is None:
+        raise HTTPException(status_code=500, detail="Database connection error")
+    
+    try:
+        connectionCursor = conn.cursor(dictionary=True)  # Use dictionary mode for JSON response
+        query = "SELECT * FROM temperatures"
+        connectionCursor.execute(query)
+        result = connectionCursor.fetchall()  # Fetch all records
+        return result
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        print("Database Error:", error_details)  # Log full error details
+        raise HTTPException(status_code=500, detail=f"Error fetching data: {e}")
+    finally:
+        connectionCursor.close()
+        conn.close()
+
+
 @app.post("/update_temperature_reading")
-async def update_temp(request: Request, data: SensorData):
+async def update_temp(data: SensorData):
     # user_id = await authenticate_user(request)
     # if user_id is None:
         # return RedirectResponse(url="/login", status_code = 302)
@@ -622,8 +644,8 @@ async def update_temp(request: Request, data: SensorData):
     try:
         connectionCursor = conn.cursor()
         timestamp = data.timestamp if data.timestamp else datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        query = f"INSERT INTO temperature (value, unit, timestamp) VALUES (%s, %s, %s)"
-        connectionCursor.execute(query, (data.value, data.unit, timestamp))
+        query = f"INSERT INTO temperatures (value, unit, mac_address, timestamp) VALUES (%s, %s, %s, %s)"
+        connectionCursor.execute(query, (data.value, data.unit, data.mac_address, timestamp))
         conn.commit()
     except Exception as e:
         import traceback

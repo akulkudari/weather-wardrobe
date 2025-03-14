@@ -152,6 +152,15 @@ def create_tables():
                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
            );
        """,
+       "temperatures": """
+           CREATE TABLE IF NOT EXISTS temperature (
+               id INT AUTO_INCREMENT PRIMARY KEY,
+               value FLOAT NOT NULL,
+               unit VARCHAR(10) NOT NULL,
+               mac_address VARCHAR(255) NOT NULL,
+               timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+           );
+       """,
        "humidity": """
            CREATE TABLE IF NOT EXISTS humidity (
                id INT AUTO_INCREMENT PRIMARY KEY,
@@ -251,7 +260,7 @@ def init_db():
     if connection:
         try:
             cursor = connection.cursor()
-            
+
             # Create tasks table if it doesn't exist
             create_table_query = """
             CREATE TABLE IF NOT EXISTS tasks (
