@@ -67,19 +67,7 @@
     <div class="w3-content">
         <div class="w3-full">
             <h2>My Sensors</h2>
-            <div id="infoContainer" class="w3-large"></div>
-            <section>
-                <h2>Temperature Data</h2>
-                <canvas id="temperatureChart"></canvas>
-              </section>
-              <section>
-                <h2>Humidity Data</h2>
-                <canvas id="humidityChart"></canvas>
-              </section>
-              <section>
-                <h2>Light Data</h2>
-                <canvas id="lightChart"></canvas>
-            </section>
+            <div id="charts"></div>
         </div>
     </div>
 </div>
@@ -96,6 +84,96 @@
 </footer>
 
 <script>
+    const charts = {}; // Store chart instances
+
+async function userMACAddress() {
+    try {
+        const userResponse = await fetch("/user_info");
+        if (!userResponse.ok) {
+            throw new Error("Failed to fetch user information");
+        }
+        const userData = await userResponse.json();
+        const id = userData.id;
+        
+        try {
+            const devicesResponse = await fetch("/devices");
+            const devices = await devicesResponse.json();
+            
+            devices.forEach(device => {
+                if (!charts[device.mac_address]) {
+                    createTemperatureChart(device.mac_address, device.device_name);
+                }
+                fetchTemperatureData(device.mac_address);
+            });
+        } catch (error) {
+            console.error("Error generating devices:", error);
+            alert("Failed to generate devices.");
+        }
+    } catch (error) {
+        console.error("Error generating userdata:", error);
+        alert("Failed to generate userdata.");
+    }
+}
+
+function createTemperatureChart(macAddress, deviceName) {
+    const chartContainer = document.getElementById("charts");
+    const chartDiv = document.createElement("div");
+    chartDiv.className = "chart-container";
+    chartDiv.innerHTML = `<h2>Device: ${deviceName}</h2><canvas id="chart-${macAddress.replace(/:/g, '')}"></canvas>`;
+    chartContainer.appendChild(chartDiv);
+    
+    const ctx = document.getElementById(`chart-${macAddress.replace(/:/g, '')}`).getContext('2d');
+    charts[macAddress] = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [{
+                label: `Temperature (°C) - ${macAddress}`,
+                data: [],
+                borderColor: 'blue',
+                fill: false,
+                tension: 0.1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Time'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Temperature (°C)'
+                    }
+                }
+            }
+        }
+    });
+}
+
+async function fetchTemperatureData(macAddress) {
+    try {
+        const response = await fetch(`/temperatures/${macAddress}`);
+        const data = await response.json();
+        
+        const timestamps = data.map(entry => new Date(entry.timestamp).toLocaleTimeString());
+        const temperatures = data.map(entry => entry.value);
+        
+        const chart = charts[macAddress];
+        chart.data.labels = timestamps;
+        chart.data.datasets[0].data = temperatures;
+        chart.update();
+    } catch (error) {
+        console.error(`Error fetching temperature data for ${macAddress}:`, error);
+    }
+}
+
+userMACAddress();
+setInterval(userMACAddress, 5000); // Refresh data every 5 seconds
 // Fetch user location and weather data
 document.addEventListener("DOMContentLoaded", async function () {
     try {
