@@ -269,24 +269,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         },
         });
     };
-
-    const initiateDashboard = async () => {
-        try {
-        const [temperatureData, humidityData, lightData] = await Promise.all([
-            fetchSensorData("temperature"),
-            fetchSensorData("humidity"),
-            fetchSensorData("light"),
-        ]);
-
-        renderChart("temperatureChart", "Temperature", temperatureData);
-        renderChart("humidityChart", "Humidity", humidityData);
-        renderChart("lightChart", "Light", lightData);
-        } catch (error) {
-        console.error("Error initializing dashboard:", error);
-        }
-    };
-
-    initiateDashboard();
 });
 
 async function getCoordinates(city) {
@@ -330,14 +312,6 @@ async function getWeather(lat, lon, location) {
     }
 }
     let index = 0;
-    function typeWriterEffect() {
-            if (index < text.length) {
-                outputContainer.innerHTML += text[index];
-                index++;
-                setTimeout(typeWriterEffect, 20); // Adjust speed here
-            }
-        }
-        typeWriterEffect();
 
     async function generateText() {
         const prompt = document.getElementById("aiInput").value.trim();
