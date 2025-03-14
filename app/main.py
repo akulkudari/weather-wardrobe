@@ -632,6 +632,31 @@ async def get_temp():
         connectionCursor.close()
         conn.close()
 
+@app.get("/temperatures/{mac_address}")
+async def get_temp_by_mac(mac_address: str):
+    conn = db.get_db_connection()
+    if conn is None:
+        raise HTTPException(status_code=500, detail="Database connection error")
+
+    try:
+        connectionCursor = conn.cursor(dictionary=True)  # Use dictionary mode for JSON response
+        query = "SELECT * FROM temperatures WHERE mac_address = %s"
+        connectionCursor.execute(query, (mac_address,))
+        result = connectionCursor.fetchall()  # Fetch all records
+        
+        if not result:
+            raise HTTPException(status_code=404, detail=f"No temperature data found for MAC address: {mac_address}")
+
+        return result
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        print("Database Error:", error_details)  # Log full error details
+        raise HTTPException(status_code=500, detail=f"Error fetching data: {e}")
+    finally:
+        connectionCursor.close()
+        conn.close()
+
 
 @app.post("/update_temperature_reading")
 async def update_temp(data: SensorData):
