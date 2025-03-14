@@ -301,33 +301,48 @@ async def generate_ai_image(request: Request):
     prompt = data.get("prompt")
     width = data.get("width", 512)
     height = data.get("height", 512)
-    
+
+    if not prompt:
+        raise HTTPException(status_code=400, detail="Prompt is required")
+
     user_id = await authenticate_user(request)
     if user_id is None:
         return RedirectResponse(url="/login", status_code=303)
+
+    conn = db.get_db_connection()
+    cursor = conn.cursor()
     
-    async with httpx.AsyncClient() as client:
-        user_response = await client.get("https://tech-assignment-final-project-sherif-and.onrender.com/user_info", headers={"Authorization": f"Bearer {request.cookies.get('access_token')}"})
-        if user_response.status_code != 200:
-            raise HTTPException(status_code=user_response.status_code, detail="Failed to fetch user info")
-        
-        user = user_response.json()
-        if not user or "email" not in user or "PID" not in user:
-            raise HTTPException(status_code=404, detail="User data incomplete or not found")
-        
+    try:
+        cursor.execute("SELECT email, PID FROM users WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+
         payload = {
-            "email": user["email"],
-            "PID": user["PID"],
+            "email": user[0],
+            "PID": user[1],
             "prompt": prompt,
             "width": width,
             "height": height
         }
-        
-        response = await client.post(API_URL, json=payload)
+        print("email: " + user[0] + "PID" + user[1])
+        async with httpx.AsyncClient() as client:
+            response = await client.post(API_URL, json=payload)
+
         if response.status_code != 200:
             raise HTTPException(status_code=response.status_code, detail=response.text)
-        
-    return response.json()
+
+        return response.json()
+    
+    except Exception as e:
+        import traceback
+        print("Database Error:", traceback.format_exc())  # Log error details
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+    finally:
+        cursor.close()
+        conn.close()
   
 @app.get("/user_info")
 async def get_user_info(request: Request):
