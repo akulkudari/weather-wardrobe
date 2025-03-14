@@ -54,7 +54,7 @@
                     
                     devices.forEach(device => {
                         if (!charts[device.mac_address]) {
-                            createTemperatureChart(device.mac_address);
+                            createTemperatureChart(device.mac_address, device.device_name);
                         }
                         fetchTemperatureData(device.mac_address);
                     });
@@ -68,11 +68,11 @@
             }
         }
 
-        function createTemperatureChart(macAddress) {
+        function createTemperatureChart(macAddress, deviceName) {
             const chartContainer = document.getElementById("charts");
             const chartDiv = document.createElement("div");
             chartDiv.className = "chart-container";
-            chartDiv.innerHTML = `<h2>Device: ${macAddress}</h2><canvas id="chart-${macAddress.replace(/:/g, '')}"></canvas>`;
+            chartDiv.innerHTML = `<h2>Device: ${deviceName}</h2><canvas id="chart-${macAddress.replace(/:/g, '')}"></canvas>`;
             chartContainer.appendChild(chartDiv);
             
             const ctx = document.getElementById(`chart-${macAddress.replace(/:/g, '')}`).getContext('2d');
