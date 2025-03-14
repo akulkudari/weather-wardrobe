@@ -252,6 +252,11 @@ def init_db():
         try:
             cursor = connection.cursor()
             
+            tables_to_clear = ["temperature", "humidity", "light"]
+            for table in tables_to_clear:
+                cursor.execute(f"DELETE FROM {table};")
+                connection.commit()
+                print(f"All entries deleted from {table} table.")
             # Create tasks table if it doesn't exist
             create_table_query = """
             CREATE TABLE IF NOT EXISTS tasks (
