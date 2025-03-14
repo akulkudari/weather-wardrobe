@@ -307,7 +307,7 @@ async def generate_ai_image(request: Request):
         return RedirectResponse(url="/login", status_code=303)
     
     async with httpx.AsyncClient() as client:
-        user_response = await client.get("/user_info", headers={"Authorization": f"Bearer {request.cookies.get('access_token')}"})
+        user_response = await client.get("https://tech-assignment-final-project-sherif-and.onrender.com/user_info", headers={"Authorization": f"Bearer {request.cookies.get('access_token')}"})
         if user_response.status_code != 200:
             raise HTTPException(status_code=user_response.status_code, detail="Failed to fetch user info")
         
