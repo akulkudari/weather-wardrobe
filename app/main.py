@@ -326,9 +326,17 @@ async def generate_ai_image(request: Request):
             "width": width,
             "height": height
         }
-        print("email: " + user[0] + "PID" + user[1])
+        print("email: " + user[0] + " PID: " + user[1])
         async with httpx.AsyncClient() as client:
-            response = await client.post(API_URL, json=payload)
+            response = await client.post(
+                API_URL,
+                headers={
+                    "email": user[0],
+                    "pid": user[1],
+                    "Content-Type": "application/json"
+                },
+                json={"prompt": prompt}  # Sending prompt as JSON body
+            )
 
         if response.status_code != 200:
             raise HTTPException(status_code=response.status_code, detail=response.text)
