@@ -286,6 +286,53 @@ async def read_dashboard(request: Request):
         return RedirectResponse(url="/login", status_code = 302)
     return FileResponse("app/dashboard.html")
 
+@app.get("/image")
+async def image_page(request: Request):
+    user_id = authenticate_user()
+    if user_id is None:
+        return RedirectResponse(url="/login", status_code=303)
+    return FileResponse("app/imagegen.html")
+
+@app.post("/ai-image")
+async def generate_ai_image(request: Request):
+    data = await request.json()
+    prompt = data.get("prompt")
+    if not prompt:
+        raise HTTPException(status_code=400, detail="Prompt is required")
+    width = data.get("width", 512)
+    height = data.get("height", 512)
+    user_id = authenticate_user(request)
+    if user_id is None:
+        return RedirectResponse(url="/login", status_code=303)
+    conn = db.get_db_connection()
+    cursor = conn.cursor()
+    try: 
+        cursor.execute("SELECT email, PID FROM users WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        API_URL = "https://ece140-wi25-api.frosty-sky-f43d.workers.dev/api/v1/ai/image"
+        payload = {
+            "email": user[0],
+            "PID": user[1],
+            "prompt": prompt,
+            "width": width,
+            "height": height
+        }
+        async with httpx.AsyncClient() as client:
+            response = await client.post(API_URL, json=payload)
+        if response.status_code != 200:
+            raise HTTPException(status_code=response.status_code, detail=response.text)
+        
+        return response.json()
+    except Exception as e:
+        import traceback
+        print("Database Error:", traceback.format_exc())  # Log error details
+        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}")
+
+    finally:
+        cursor.close()
+        conn.close()    
 @app.get("/user_info")
 async def get_user_info(request: Request):
     """
