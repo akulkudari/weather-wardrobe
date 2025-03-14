@@ -95,7 +95,18 @@
                 
                 const devicesResponse = await fetch("/devices");
                 const devices = await devicesResponse.json();
+                
+                const chartContainer = document.getElementById("charts");
+                chartContainer.innerHTML = ""; // Clear previous content
 
+                if (devices.message === "No devices found for this user.") {
+                    chartContainer.innerHTML = `
+                        <p>You don't have any devices yet, would you like to add a device?</p>
+                        <button onclick="window.location.href='/profile'">Go to Profile</button>
+                    `;
+                    return;
+                }
+                else{
                 devices.forEach(device => {
                     const uniqueId = device.id; // Use the device ID as the unique identifier
 
@@ -104,9 +115,9 @@
                     }
                     fetchTemperatureData(device.mac_address, uniqueId);
                 });
+              }
             } catch (error) {
-                console.error("Error generating devices:", error);
-                alert("Failed to generate devices.");
+                console.error("Error fetching devices:", error);
             }
         }
 
