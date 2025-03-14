@@ -68,6 +68,7 @@
         <div class="w3-full">
             <h2>My Sensors</h2>
             <div id="charts"></div>
+            <button class="w3-button w3-blue w3-margin-top" onclick="window.location.href='/profile'">Go to Device Manager</button>
         </div>
     </div>
 </div>
@@ -102,7 +103,6 @@
                 if (devices.message === "No devices found for this user.") {
                     chartContainer.innerHTML = `
                         <p class="w3-large">You don't have any devices yet, would you like to add a device?</p>
-                        <button class="w3-button w3-blue w3-margin-top" onclick="window.location.href='/profile'">Go to Profile</button>
                     `;
                     return;
                 }
