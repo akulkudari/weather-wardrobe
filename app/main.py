@@ -613,9 +613,9 @@ async def read_login():
 
 @app.post("/update_temperature_reading")
 async def update_temp(request: Request, data: SensorData):
-    user_id = await authenticate_user(request)
-    if user_id is None:
-        return RedirectResponse(url="/login", status_code = 302)
+    # user_id = await authenticate_user(request)
+    # if user_id is None:
+        # return RedirectResponse(url="/login", status_code = 302)
     conn = db.get_db_connection()
     if conn is None:
         return "Database connection error"
