@@ -288,7 +288,7 @@ async def read_dashboard(request: Request):
 
 @app.get("/image")
 async def image_page(request: Request):
-    user_id = authenticate_user(request)
+    user_id = await authenticate_user(request)
     if user_id is None:
         return RedirectResponse(url="/login", status_code=303)
     return FileResponse("app/imagegen.html")
@@ -301,7 +301,7 @@ async def generate_ai_image(request: Request):
         raise HTTPException(status_code=400, detail="Prompt is required")
     width = data.get("width", 512)
     height = data.get("height", 512)
-    user_id = authenticate_user(request)
+    user_id = await authenticate_user(request)
     if user_id is None:
         return RedirectResponse(url="/login", status_code=303)
     conn = db.get_db_connection()
