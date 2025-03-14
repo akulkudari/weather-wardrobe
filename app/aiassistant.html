@@ -48,11 +48,11 @@
                 
                 const devicesResponse = await fetch("/devices");
                 const devices = await devicesResponse.json();
-
+                
                 const chartContainer = document.getElementById("charts");
                 chartContainer.innerHTML = ""; // Clear previous content
 
-                if (devices.length === 0) {
+                if (devices.message === "No devices found for this user.") {
                     chartContainer.innerHTML = `
                         <p>You don't have any devices yet, would you like to add a device?</p>
                         <button onclick="window.location.href='/profile'">Go to Profile</button>
