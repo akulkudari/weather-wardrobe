@@ -611,6 +611,26 @@ async def getAIResponse(request: Request, email: str = Form(...), PID: str = For
 async def read_login():
     return FileResponse("app/login.html")
 
+@app.post("/update_temperature_reading")
+async def update_temp(request: Request, data: SensorData):
+    user_id = await authenticate_user(request)
+    if user_id is None:
+        return RedirectResponse(url="/login", status_code = 302)
+    conn = db.get_db_connection()
+    if conn is None:
+        return "Database connection error"
+    try:
+        connectionCursor = conn.cursor()
+        timestamp = data.timestamp if data.timestamp else datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        query = f"INSERT INTO temperature (value, unit, timestamp, mac_address) VALUES (%s, %s, %s, %s)"
+        connectionCursor.execute(query, (data.value, data.unit, timestamp, data.mac_address))
+        conn.commit()
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        print("Database Error:", error_details)  # Log full error details
+        raise HTTPException(status_code=500, detail=f"Error during database operation: {e}")
+
 @app.post("/login")
 async def userlogin(request: Request, email: str = Form(...), password: str = Form(...)):
     """Login endpoint to authenticate the user."""

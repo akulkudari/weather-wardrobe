@@ -68,7 +68,8 @@ private:
     PubSubClient* _mqttClient;
     String _clientId;
     String _topicPrefix;
-    const char* _broker = "broker.hivemq.com";
+    const char* _broker = "broker.emqx.io";
+    //broker.emqx.io
     bool _isTLS;
 
     void _setupMQTTClient(int port);

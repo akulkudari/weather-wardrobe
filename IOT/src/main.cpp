@@ -64,5 +64,4 @@ void loop() {
     mqtt.publishMessage("readings", payload);
     mqtt.loop();
     delay(1000);
-    
 }
