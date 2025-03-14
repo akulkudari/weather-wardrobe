@@ -73,6 +73,16 @@
     </div>
 </div>
 
+<div class="w3-row-padding w3-padding-64 w3-container">
+    <div class="w3-content">
+        <div class="w3-full">
+            <input type="text" id="prompt" placeholder="Enter your prompt...">
+            <button class="w3-button w3-blue w3-margin-top" onclick="generateImage()">Generate</button>
+            <div id="image-container"></div>        
+        </div>
+    </div>
+</div>
+
 <!-- Footer -->
 <footer class="w3-container w3-padding-64 w3-center w3-opacity">
     <div class="w3-xlarge w3-padding-32">
@@ -351,6 +361,30 @@ async function getWeather(lat, lon, location) {
             alert("Failed to generate text.");
         }
     }
+    async function generateImage() {
+            const prompt = document.getElementById("prompt").value;
+            if (!prompt) {
+                alert("Please enter a prompt.");
+                return;
+            }
+            
+            const response = await fetch(`/ai-image`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prompt: prompt })
+            });
+
+            if (!response.ok) {
+                alert("Error generating image.");
+                return;
+            }
+            
+            const blob = await response.blob(); // Convert response to binary blob
+            const imageUrl = URL.createObjectURL(blob); // Create a URL for the blob
+            
+            document.getElementById("image-container").innerHTML = 
+                `<img src="${imageUrl}" alt="Generated Image" style="max-width: 100%; margin-top: 20px;">`;
+        }
 </script>
 
 </body>
