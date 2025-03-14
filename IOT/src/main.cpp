@@ -28,8 +28,8 @@ void setup() {
     Serial.begin(115200);
     bmp.begin();
     //connect to wifi
-    wifi.connectToWPAEnterprise(wifiSsid, ucsdUsername, ucsdPassword);
-
+    //wifi.connectToWPAEnterprise(wifiSsid, ucsdUsername, ucsdPassword);
+    wifi.connectToWiFi("WHOISINPARIS", "blackpeople");
     //connect to MQTT
     Serial.println("[Main] Connecting to MQTT...");
     if(!mqtt.connectToBroker(1883)){

@@ -46,7 +46,7 @@ def on_message(client, userdata, msg):
             temperature = payload["temperature"]
             current_time = time.time()
             mac_address = payload["mac_address"]
-            if current_time  - last_request_time >= 5:
+            if current_time  - last_request_time >= 60:
                 last_request_time = current_time
                 data = {"value": temperature, "unit": "celsius", "mac_address": mac_address}
                 response = requests.post(WEB_SERVER_URL, json=data)
