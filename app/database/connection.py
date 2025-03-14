@@ -1,6 +1,7 @@
 import mysql.connector
 from mysql.connector import Error
 import os
+import HTTPException
 from dotenv import load_dotenv
 from typing import Optional
 import pandas as pd
@@ -152,15 +153,6 @@ def create_tables():
                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
            );
        """,
-       "temperatures": """
-           CREATE TABLE IF NOT EXISTS temperature (
-               id INT AUTO_INCREMENT PRIMARY KEY,
-               value FLOAT NOT NULL,
-               unit VARCHAR(10) NOT NULL,
-               mac_address VARCHAR(255) NOT NULL,
-               timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-           );
-       """,
        "humidity": """
            CREATE TABLE IF NOT EXISTS humidity (
                id INT AUTO_INCREMENT PRIMARY KEY,
@@ -180,6 +172,35 @@ def create_tables():
            );
        """,
    }
+
+def create_temperatures_table():
+    """Ensures that the temperatures table exists before inserting data."""
+    conn = get_db_connection()
+    if conn is None:
+        raise HTTPException(status_code=500, detail="Database connection error")
+    
+    try:
+        connectionCursor = conn.cursor()
+        create_table_query = """
+            CREATE TABLE IF NOT EXISTS temperatures (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                value FLOAT NOT NULL,
+                unit VARCHAR(10) NOT NULL,
+                mac_address VARCHAR(255) NOT NULL,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
+        """
+        connectionCursor.execute(create_table_query)
+        conn.commit()
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        print("Database Error:", error_details)  # Log full error details
+        raise HTTPException(status_code=500, detail=f"Error creating table: {e}")
+    finally:
+        connectionCursor.close()
+        conn.close()
+
 async def get_user_by_id(user_id: int) -> Optional[dict]:
     """
     Retrieve user from database by ID.
