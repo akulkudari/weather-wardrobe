@@ -186,7 +186,7 @@ async function fetchTemperatureData(macAddress) {
 }
 
 userMACAddress();
-setInterval(userMACAddress, 5000); // Refresh data every 5 seconds
+setInterval(userMACAddress, 50); // Refresh data every 5 seconds
 // Fetch user location and weather data
 document.addEventListener("DOMContentLoaded", async function () {
     try {
