@@ -84,96 +84,91 @@
 </footer>
 
 <script>
-    const charts = {}; // Store chart instances
-
-async function userMACAddress() {
-    try {
-        const userResponse = await fetch("/user_info");
-        if (!userResponse.ok) {
-            throw new Error("Failed to fetch user information");
-        }
-        const userData = await userResponse.json();
-        const id = userData.id;
-        
-        try {
-            const devicesResponse = await fetch("/devices");
-            const devices = await devicesResponse.json();
-            
-            devices.forEach(device => {
-                if (!charts[device.mac_address]) {
-                    createTemperatureChart(device.mac_address, device.device_name);
+        const charts = {}; // Store chart instances
+        async function userMACAddress() {
+            try {
+                const userResponse = await fetch("/user_info");
+                if (!userResponse.ok) {
+                    throw new Error("Failed to fetch user information");
                 }
-                fetchTemperatureData(device.mac_address);
-            });
-        } catch (error) {
-            console.error("Error generating devices:", error);
-            alert("Failed to generate devices.");
-        }
-    } catch (error) {
-        console.error("Error generating userdata:", error);
-        alert("Failed to generate userdata.");
-    }
-}
+                const userData = await userResponse.json();
+                
+                const devicesResponse = await fetch("/devices");
+                const devices = await devicesResponse.json();
 
-function createTemperatureChart(macAddress, deviceName) {
-    const chartContainer = document.getElementById("charts");
-    const chartDiv = document.createElement("div");
-    chartDiv.className = "chart-container";
-    chartDiv.innerHTML = `<h2>Device: ${deviceName}</h2><canvas id="chart-${macAddress.replace(/:/g, '')}"></canvas>`;
-    chartContainer.appendChild(chartDiv);
-    
-    const ctx = document.getElementById(`chart-${macAddress.replace(/:/g, '')}`).getContext('2d');
-    charts[macAddress] = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: [],
-            datasets: [{
-                label: `Temperature (°C) - ${macAddress}`,
-                data: [],
-                borderColor: 'blue',
-                fill: false,
-                tension: 0.1
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Time'
+                devices.forEach(device => {
+                    const uniqueId = device.id; // Use the device ID as the unique identifier
+
+                    if (!charts[uniqueId]) {
+                        createTemperatureChart(uniqueId, device.device_name);
                     }
-                },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Temperature (°C)'
-                    }
-                }
+                    fetchTemperatureData(device.mac_address, uniqueId);
+                });
+            } catch (error) {
+                console.error("Error generating devices:", error);
+                alert("Failed to generate devices.");
             }
         }
-    });
-}
 
-async function fetchTemperatureData(macAddress) {
-    try {
-        const response = await fetch(`/temperatures/${macAddress}`);
-        const data = await response.json();
-        
-        const timestamps = data.map(entry => new Date(entry.timestamp).toLocaleTimeString());
-        const temperatures = data.map(entry => entry.value);
-        
-        const chart = charts[macAddress];
-        chart.data.labels = timestamps;
-        chart.data.datasets[0].data = temperatures;
-        chart.update();
-    } catch (error) {
-        console.error(`Error fetching temperature data for ${macAddress}:`, error);
-    }
-}
+        function createTemperatureChart(uniqueId, deviceName) {
+            const chartContainer = document.getElementById("charts");
+            const chartDiv = document.createElement("div");
+            chartDiv.className = "chart-container";
+            chartDiv.innerHTML = `<h2>Device: ${deviceName}</h2><canvas id="chart-${uniqueId}"></canvas>`;
+            chartContainer.appendChild(chartDiv);
+            
+            const ctx = document.getElementById(`chart-${uniqueId}`).getContext('2d');
+            charts[uniqueId] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: `Temperature (°C) - ${deviceName}`,
+                        data: [],
+                        borderColor: 'blue',
+                        fill: false,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Temperature (°C)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
 
-userMACAddress();
-setInterval(userMACAddress, 5000); // Refresh data every 5 seconds
+        async function fetchTemperatureData(macAddress, uniqueId) {
+            try {
+                const response = await fetch(`/temperatures/${macAddress}`);
+                const data = await response.json();
+                
+                const timestamps = data.map(entry => new Date(entry.timestamp).toLocaleTimeString());
+                const temperatures = data.map(entry => entry.value);
+                
+                const chart = charts[uniqueId];
+                chart.data.labels = timestamps;
+                chart.data.datasets[0].data = temperatures;
+                chart.update();
+            } catch (error) {
+                console.error(`Error fetching temperature data for ${macAddress}:`, error);
+            }
+        }
+
+        userMACAddress();
+        setInterval(userMACAddress, 5000); // Refresh data every 5 seconds
 // Fetch user location and weather data
 document.addEventListener("DOMContentLoaded", async function () {
     try {
